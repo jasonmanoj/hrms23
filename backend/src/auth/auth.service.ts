@@ -258,6 +258,7 @@ export class AuthService {
         roleName: user.role?.name ?? null,
         employeeId: user.employeeId,
         passwordResetRequired: user.passwordResetRequired,
+        permissions,
       },
     };
   }

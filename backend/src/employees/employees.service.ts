@@ -23,6 +23,28 @@ function stripSensitive<T extends Record<string, any>>(record: T): T {
   return copy;
 }
 
+const DATE_FIELDS = [
+  'dateOfBirth',
+  'dateOfJoining',
+  'probationStart',
+  'probationEnd',
+  'confirmationDate',
+  'lastWorkingDate',
+  'passportExpiry',
+  'visaExpiry',
+  'labourCardExpiry',
+] as const;
+
+// class-validator's @IsDateString() accepts date-only strings (YYYY-MM-DD), but Prisma's
+// DateTime scalar requires a full ISO-8601 datetime, so date-only inputs must be converted.
+function coerceDateFields<T extends Record<string, any>>(record: T): T {
+  const copy: Record<string, any> = { ...record };
+  for (const field of DATE_FIELDS) {
+    if (typeof copy[field] === 'string') copy[field] = new Date(copy[field]);
+  }
+  return copy as T;
+}
+
 @Injectable()
 export class EmployeesService {
   constructor(
@@ -89,7 +111,7 @@ export class EmployeesService {
   }
 
   async create(user: AuthenticatedUser, dto: UpsertEmployeeDto) {
-    const data = this.canEditSensitive(user) ? dto : stripSensitive(dto as any);
+    const data = coerceDateFields(this.canEditSensitive(user) ? dto : stripSensitive(dto as any));
     const employeeNumber = dto.employeeNumber ?? (await this.nextEmployeeNumber(user.organizationId));
 
     const employee = await this.prisma.employee.create({
@@ -115,7 +137,7 @@ export class EmployeesService {
 
   async update(user: AuthenticatedUser, id: string, dto: UpsertEmployeeDto) {
     const before = await this.get(user, id);
-    const data = this.canEditSensitive(user) ? dto : stripSensitive(dto as any);
+    const data = coerceDateFields(this.canEditSensitive(user) ? dto : stripSensitive(dto as any));
 
     const employee = await this.prisma.employee.update({ where: { id }, data: data as any });
 
