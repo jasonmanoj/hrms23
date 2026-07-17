@@ -6,6 +6,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bullmq';
 
 import { PrismaModule } from './prisma/prisma.module';
+import { createRedisConnection } from './common/redis-connection';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { PermissionsGuard } from './common/guards/permissions.guard';
 
@@ -34,9 +35,7 @@ import { JobsModule } from './jobs/jobs.module';
     ScheduleModule.forRoot(),
     BullModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        connection: { host: config.get<string>('REDIS_HOST', 'localhost'), port: Number(config.get<string>('REDIS_PORT', '6379')) },
-      }),
+      useFactory: (config: ConfigService) => ({ connection: createRedisConnection(config) }),
     }),
     PrismaModule,
     AuthModule,
