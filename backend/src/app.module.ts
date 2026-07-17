@@ -27,6 +27,7 @@ import { ExportsModule } from './exports/exports.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { AuditLogsModule } from './audit-logs/audit-logs.module';
 import { JobsModule } from './jobs/jobs.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { JobsModule } from './jobs/jobs.module';
     NotificationsModule,
     AuditLogsModule,
     JobsModule,
+    HealthModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

@@ -35,6 +35,28 @@ npm run dev                   # http://localhost:3000
 
 Default seeded login (after `npm run seed`): `admin@hrms.local` / `Admin@12345`.
 
+## Deployment
+
+**Backend → Railway:**
+1. New Project → Deploy from GitHub repo → root directory `backend`, branch as needed.
+2. Add PostgreSQL and Redis services in the same Railway project.
+3. On the backend service, set env vars: `DATABASE_URL` (reference the Postgres service), `REDIS_URL` (reference the
+   Redis service), `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` (random values, e.g. `openssl rand -hex 32`),
+   `CORS_ORIGIN` (your frontend URL), `NODE_ENV=production`.
+4. `railway.json` in `backend/` pins the build/start commands and a `/api/health` healthcheck so Railway knows when
+   the instance is actually ready (migrations run automatically via `start:prod`).
+5. Seed the deployed database once via Railway's shell: `npm run seed`.
+
+**Frontend → Vercel:**
+1. Import the repo → root directory `frontend`.
+2. Env var: `NEXT_PUBLIC_API_URL=https://<railway-backend-url>/api`.
+3. Deploy, then set `CORS_ORIGIN` on the Railway backend to the resulting Vercel URL.
+
+Once both are wired to the same branch, every push auto-deploys both sides — no local run required to see changes.
+
+**Known limitation:** uploaded documents and report exports are written to local disk and are not persisted across
+Railway redeploys. Swapping in S3-compatible object storage (already called out as a future phase) removes this.
+
 ## Development phases
 
 This repo currently implements Phase 1-4 of the specification's roadmap (Core Platform, Leave Management,
