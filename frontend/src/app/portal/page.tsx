@@ -63,7 +63,7 @@ export default function PortalDashboardPage() {
       <h1 className="text-2xl font-semibold">My Dashboard</h1>
 
       <div className="card p-5">
-        <h2 className="mb-3 text-lg font-medium">Today's Attendance</h2>
+        <h2 className="mb-3 text-lg font-medium">Today&apos;s Attendance</h2>
         <div className="flex items-center gap-4">
           <div>
             <p className="text-sm text-slate-500">Check-in</p>
